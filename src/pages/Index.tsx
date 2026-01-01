@@ -14,8 +14,8 @@ const channels = [
   { id: "4", name: "General", type: "text" as const, unread: 5 },
   { id: "5", name: "Introductions", type: "text" as const },
   { id: "6", name: "Questions", type: "text" as const, unread: 1 },
-  { id: "7", name: "Gallery", type: "media" as const },
-  { id: "8", name: "Inspiration", type: "media" as const },
+  { id: "7", name: "Community Highlights", type: "highlights" as const },
+  { id: "8", name: "Best of the Week", type: "highlights" as const },
 ];
 
 const audioRooms = [

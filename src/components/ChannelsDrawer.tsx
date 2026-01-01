@@ -1,11 +1,11 @@
-import { X, Hash, Image, Bell, Mic, ChevronRight } from "lucide-react";
+import { X, Hash, Bell, Mic, ChevronRight, Sparkles } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 interface Channel {
   id: string;
   name: string;
-  type: "text" | "media" | "announcement" | "audio";
+  type: "text" | "highlights" | "announcement" | "audio";
   unread?: number;
   isLive?: boolean;
   participants?: number;
@@ -19,7 +19,7 @@ interface ChannelsDrawerProps {
 
 const channelIcons = {
   text: Hash,
-  media: Image,
+  highlights: Sparkles,
   announcement: Bell,
   audio: Mic,
 };
@@ -32,8 +32,8 @@ function getChannelRoute(channel: Channel): string {
       return `/voice/${channel.id}`;
     case "announcement":
       return `/room/${channel.id}`;
-    case "media":
-      return `/media/${channel.id}`;
+    case "highlights":
+      return `/highlights/${channel.id}`;
     default:
       return `/channel/${channel.id}`;
   }
@@ -51,7 +51,7 @@ export function ChannelsDrawer({
     announcement: channels.filter((c) => c.type === "announcement"),
     audio: channels.filter((c) => c.type === "audio"),
     text: channels.filter((c) => c.type === "text"),
-    media: channels.filter((c) => c.type === "media"),
+    highlights: channels.filter((c) => c.type === "highlights"),
   };
 
   const handleSelectChannel = (channel: Channel) => {
@@ -118,21 +118,21 @@ export function ChannelsDrawer({
               />
             )}
 
-            {/* Text Channels */}
+            {/* General Rooms */}
             {groupedChannels.text.length > 0 && (
               <ChannelGroup
-                title="Text Channels"
+                title="General Rooms"
                 channels={groupedChannels.text}
                 onSelectChannel={handleSelectChannel}
                 isChannelActive={isChannelActive}
               />
             )}
 
-            {/* Media */}
-            {groupedChannels.media.length > 0 && (
+            {/* Highlights */}
+            {groupedChannels.highlights.length > 0 && (
               <ChannelGroup
-                title="Media"
-                channels={groupedChannels.media}
+                title="Highlights"
+                channels={groupedChannels.highlights}
                 onSelectChannel={handleSelectChannel}
                 isChannelActive={isChannelActive}
               />
