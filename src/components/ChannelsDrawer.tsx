@@ -1,4 +1,5 @@
 import { X, Hash, Image, Bell, Mic, ChevronRight } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 interface Channel {
@@ -14,8 +15,6 @@ interface ChannelsDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   channels: Channel[];
-  activeChannel: string | null;
-  onSelectChannel: (id: string) => void;
 }
 
 const channelIcons = {
@@ -25,18 +24,45 @@ const channelIcons = {
   audio: Mic,
 };
 
+function getChannelRoute(channel: Channel): string {
+  switch (channel.type) {
+    case "text":
+      return `/channel/${channel.id}`;
+    case "audio":
+      return `/voice/${channel.id}`;
+    case "announcement":
+      return `/room/${channel.id}`;
+    case "media":
+      return `/media/${channel.id}`;
+    default:
+      return `/channel/${channel.id}`;
+  }
+}
+
 export function ChannelsDrawer({
   isOpen,
   onClose,
   channels,
-  activeChannel,
-  onSelectChannel,
 }: ChannelsDrawerProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const groupedChannels = {
     announcement: channels.filter((c) => c.type === "announcement"),
+    audio: channels.filter((c) => c.type === "audio"),
     text: channels.filter((c) => c.type === "text"),
     media: channels.filter((c) => c.type === "media"),
-    audio: channels.filter((c) => c.type === "audio"),
+  };
+
+  const handleSelectChannel = (channel: Channel) => {
+    const route = getChannelRoute(channel);
+    navigate(route);
+    onClose();
+  };
+
+  const isChannelActive = (channel: Channel): boolean => {
+    const route = getChannelRoute(channel);
+    return location.pathname === route;
   };
 
   return (
@@ -77,8 +103,8 @@ export function ChannelsDrawer({
               <ChannelGroup
                 title="Announcements"
                 channels={groupedChannels.announcement}
-                activeChannel={activeChannel}
-                onSelectChannel={onSelectChannel}
+                onSelectChannel={handleSelectChannel}
+                isChannelActive={isChannelActive}
               />
             )}
 
@@ -87,8 +113,8 @@ export function ChannelsDrawer({
               <ChannelGroup
                 title="Voice Rooms"
                 channels={groupedChannels.audio}
-                activeChannel={activeChannel}
-                onSelectChannel={onSelectChannel}
+                onSelectChannel={handleSelectChannel}
+                isChannelActive={isChannelActive}
               />
             )}
 
@@ -97,8 +123,8 @@ export function ChannelsDrawer({
               <ChannelGroup
                 title="Text Channels"
                 channels={groupedChannels.text}
-                activeChannel={activeChannel}
-                onSelectChannel={onSelectChannel}
+                onSelectChannel={handleSelectChannel}
+                isChannelActive={isChannelActive}
               />
             )}
 
@@ -107,8 +133,8 @@ export function ChannelsDrawer({
               <ChannelGroup
                 title="Media"
                 channels={groupedChannels.media}
-                activeChannel={activeChannel}
-                onSelectChannel={onSelectChannel}
+                onSelectChannel={handleSelectChannel}
+                isChannelActive={isChannelActive}
               />
             )}
           </div>
@@ -121,13 +147,13 @@ export function ChannelsDrawer({
 function ChannelGroup({
   title,
   channels,
-  activeChannel,
   onSelectChannel,
+  isChannelActive,
 }: {
   title: string;
   channels: Channel[];
-  activeChannel: string | null;
-  onSelectChannel: (id: string) => void;
+  onSelectChannel: (channel: Channel) => void;
+  isChannelActive: (channel: Channel) => boolean;
 }) {
   return (
     <div>
@@ -137,12 +163,12 @@ function ChannelGroup({
       <div className="space-y-1">
         {channels.map((channel) => {
           const Icon = channelIcons[channel.type];
-          const isActive = activeChannel === channel.id;
+          const isActive = isChannelActive(channel);
 
           return (
             <button
               key={channel.id}
-              onClick={() => onSelectChannel(channel.id)}
+              onClick={() => onSelectChannel(channel)}
               className={cn(
                 "channel-item w-full group",
                 isActive && "active"
