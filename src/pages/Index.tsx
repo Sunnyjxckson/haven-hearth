@@ -3,6 +3,7 @@ import { Header } from "@/components/Header";
 import { ChannelsDrawer } from "@/components/ChannelsDrawer";
 import { AudioRoomCard } from "@/components/AudioRoomCard";
 import { FeedPost } from "@/components/FeedPost";
+import feedHeaderImage from "@/assets/feed-header.jpg";
 
 // Mock data
 const channels = [
@@ -105,6 +106,20 @@ export default function Index() {
         activeChannel={activeChannel}
         onSelectChannel={handleSelectChannel}
       />
+
+      {/* Feed Header Image */}
+      <div className="relative h-48 sm:h-64 overflow-hidden">
+        <img 
+          src={feedHeaderImage} 
+          alt="Community banner" 
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+        <div className="absolute bottom-6 left-0 right-0 text-center">
+          <h2 className="text-2xl sm:text-3xl font-semibold text-foreground">Welcome to The Haven</h2>
+          <p className="text-muted-foreground mt-1">A space to connect, share, and belong</p>
+        </div>
+      </div>
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
         {/* Active Audio Rooms */}
