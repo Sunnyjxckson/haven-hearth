@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { ChannelsDrawer } from "@/components/ChannelsDrawer";
 import { AudioRoomCard } from "@/components/AudioRoomCard";
@@ -19,8 +20,8 @@ const channels = [
 
 const audioRooms = [
   {
-    id: "room-1",
-    title: "Morning Coffee Chat ☕",
+    id: "2",
+    title: "The Lounge ☕",
     participants: [
       { id: "u1", name: "Sarah Chen", isSpeaker: true, isSpeaking: true, avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop" },
       { id: "u2", name: "Alex Rivera", isSpeaker: true, isSpeaking: false, avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" },
@@ -33,8 +34,8 @@ const audioRooms = [
     ],
   },
   {
-    id: "room-2",
-    title: "Creative Brainstorm",
+    id: "3",
+    title: "Late Night Talks",
     participants: [
       { id: "u9", name: "Nina Fox", isSpeaker: true, isSpeaking: true, avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop" },
       { id: "u10", name: "Tom Hardy", isSpeaker: true, avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop" },
@@ -84,12 +85,7 @@ const feedPosts = [
 
 export default function Index() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [activeChannel, setActiveChannel] = useState<string | null>("4");
-
-  const handleSelectChannel = (id: string) => {
-    setActiveChannel(id);
-    setIsDrawerOpen(false);
-  };
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-background">
@@ -103,8 +99,6 @@ export default function Index() {
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
         channels={channels}
-        activeChannel={activeChannel}
-        onSelectChannel={handleSelectChannel}
       />
 
       {/* Feed Header Image */}
@@ -133,7 +127,7 @@ export default function Index() {
                 key={room.id}
                 title={room.title}
                 participants={room.participants}
-                onJoin={() => console.log("Joining room:", room.id)}
+                onJoin={() => navigate(`/voice/${room.id}`)}
               />
             ))}
           </div>
