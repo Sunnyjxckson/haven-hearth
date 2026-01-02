@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { ChannelsDrawer } from "@/components/ChannelsDrawer";
@@ -93,6 +94,8 @@ export default function Index() {
         onMenuClick={() => setIsDrawerOpen(true)}
         communityName="The Haven"
         userAvatar="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop"
+        memberCount={1247}
+        onLeaveCommunity={() => toast.info("Leave community action")}
       />
 
       <ChannelsDrawer
