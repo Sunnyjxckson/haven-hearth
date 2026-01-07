@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { ChannelsDrawer } from "@/components/ChannelsDrawer";
 import { AudioRoomCard } from "@/components/AudioRoomCard";
 import { FeedPost } from "@/components/FeedPost";
+import { VoiceRoomOverlay } from "@/components/VoiceRoomOverlay";
+import { useVoiceRoom } from "@/contexts/VoiceRoomContext";
 import feedHeaderImage from "@/assets/feed-header.jpg";
 
 // Mock data
@@ -86,7 +87,7 @@ const feedPosts = [
 
 export default function Index() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const navigate = useNavigate();
+  const { joinRoom, isJoined } = useVoiceRoom();
 
   return (
     <div className="min-h-screen bg-background">
@@ -103,6 +104,9 @@ export default function Index() {
         onClose={() => setIsDrawerOpen(false)}
         channels={channels}
       />
+
+      {/* Voice Room Mini Player */}
+      <VoiceRoomOverlay />
 
       {/* Feed Header Image */}
       <div className="relative h-48 sm:h-64 overflow-hidden">
@@ -130,7 +134,11 @@ export default function Index() {
                 key={room.id}
                 title={room.title}
                 participants={room.participants}
-                onJoin={() => navigate(`/voice/${room.id}`)}
+                onJoin={() => joinRoom({
+                  id: room.id,
+                  name: room.title,
+                  participants: room.participants,
+                })}
               />
             ))}
           </div>
