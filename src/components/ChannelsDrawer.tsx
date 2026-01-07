@@ -1,5 +1,6 @@
 import { X, Hash, Bell, Mic, ChevronRight, Sparkles } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useVoiceRoom } from "@/contexts/VoiceRoomContext";
 import { cn } from "@/lib/utils";
 
 interface Channel {
@@ -24,12 +25,33 @@ const channelIcons = {
   audio: Mic,
 };
 
-function getChannelRoute(channel: Channel): string {
+// Mock room data for voice rooms accessed via drawer
+const voiceRoomData: Record<string, { name: string; participants: { id: string; name: string; avatar?: string; isSpeaker: boolean; isSpeaking?: boolean }[] }> = {
+  "2": {
+    name: "The Lounge",
+    participants: [
+      { id: "u1", name: "Sarah Chen", isSpeaker: true, isSpeaking: true, avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop" },
+      { id: "u2", name: "Alex Rivera", isSpeaker: true, isSpeaking: false, avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" },
+      { id: "u3", name: "Jordan Lee", isSpeaker: true, avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop" },
+      { id: "u4", name: "Maya Patel", isSpeaker: false, avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop" },
+      { id: "u5", name: "Chris Wong", isSpeaker: false, avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop" },
+    ],
+  },
+  "3": {
+    name: "Late Night Talks",
+    participants: [
+      { id: "u9", name: "Nina Fox", isSpeaker: true, isSpeaking: true, avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop" },
+      { id: "u10", name: "Tom Hardy", isSpeaker: true, avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop" },
+    ],
+  },
+};
+
+function getChannelRoute(channel: Channel): string | null {
   switch (channel.type) {
     case "text":
       return `/channel/${channel.id}`;
     case "audio":
-      return `/voice/${channel.id}`;
+      return null; // Voice rooms open as modal, no route
     case "announcement":
       return `/room/${channel.id}`;
     case "highlights":
@@ -46,6 +68,7 @@ export function ChannelsDrawer({
 }: ChannelsDrawerProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { joinRoom } = useVoiceRoom();
 
   const groupedChannels = {
     announcement: channels.filter((c) => c.type === "announcement"),
@@ -55,13 +78,26 @@ export function ChannelsDrawer({
   };
 
   const handleSelectChannel = (channel: Channel) => {
-    const route = getChannelRoute(channel);
-    navigate(route);
+    if (channel.type === "audio") {
+      // Open voice room as modal
+      const roomData = voiceRoomData[channel.id];
+      if (roomData) {
+        joinRoom({
+          id: channel.id,
+          name: roomData.name,
+          participants: roomData.participants,
+        });
+      }
+    } else {
+      const route = getChannelRoute(channel);
+      if (route) navigate(route);
+    }
     onClose();
   };
 
   const isChannelActive = (channel: Channel): boolean => {
     const route = getChannelRoute(channel);
+    if (!route) return false;
     return location.pathname === route;
   };
 
